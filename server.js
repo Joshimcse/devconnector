@@ -23,7 +23,7 @@ app.use(morgan('dev'));
 
 // initialize routes
 // require('./routes/users')(app);
-//app.use('/api/users', require('./routes/users'));
+app.use('/api/users', require('./routes/users'));
 
 
 // Error handling Middleware
