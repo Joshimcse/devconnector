@@ -7,6 +7,7 @@
 
 const express = require('express');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
 // set up express app
@@ -18,8 +19,9 @@ app.use(express.static(__dirname + '/public'));
 app.use(morgan('dev'));
 
 // parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
-
+app.use(bodyParser.json())
 
 // initialize routes
 // require('./routes/users')(app);
