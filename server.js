@@ -13,7 +13,6 @@ const morgan = require('morgan');
 // set up express app
 const app = express();
 
-
 // Middleware
 app.use(express.static(__dirname + '/public'));
 app.use(morgan('dev'));
@@ -24,12 +23,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json())
 
 // initialize routes
-// require('./routes/users')(app);
 app.use('/api/users', require('./routes/users'));
 
-
 // Error handling Middleware
-
 
 // listen for request
 const port = process.env.PORT || 5000;
@@ -39,17 +35,15 @@ app.listen(port, () => {
   // Load DB
   const db = require('./config/keys').mongoURI;
 
-  // mongoDB configuration
-  mongoose.connect(
-    db, { useNewUrlParser: true }, (err, res) => {
-      if (err) console.error(err);
-      else console.log('Connected to Database');
-    }
-  );
+  //MongoDB configuaration
+  mongoose.connect(db, { useNewUrlParser: true }, (err, res) => {
+    if (err) console.error(err);
+    else console.log('Connected to Database');
+  });
 });
+
 
 //Testing Routes
-app.get("/", (req, res) => {
-  res.status(200).json({ msg: 'routes work successfully' });
-});
-
+app.get('/', (req, res) => {
+  res.status(200).json({ msg: 'Routes work successfully' });
+})
