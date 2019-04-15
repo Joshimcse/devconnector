@@ -43,7 +43,7 @@ app.listen(port, () => {
 });
 
 
-//Testing Routes
+// Testing Routes
 app.get('/', (req, res) => {
   res.status(200).json({ msg: 'Routes work successfully' });
 })
