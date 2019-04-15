@@ -8,12 +8,16 @@
 
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+// Load Keys
+const keys = require('../config/keys');
 
 // Load User Model
 const User = require('../models/User');
 
 /**
-* @controller  Register
+* @controller Register
 * @desc       register a users to the database...
 * @return     
 */
@@ -40,4 +44,41 @@ const registerController = (req, res) => {
     }).catch(err => console.error(err));
 }
 
-module.exports = { registerController }
+/**
+* @controller Login
+* @desc       
+* @return     
+*/
+const loginController = (req, res) => {
+  let { email, password } = req.body;
+
+  // Find user by email
+  User.findOne({ email }).then(user => {
+    if (!user) res.status(404).json({ Error: 'User not found' });
+    else {
+      // Check password
+      bcrypt.compare(password, user.password).then(isMatch => {
+        if (isMatch) { // user & password matched
+          // Create JWT Payload
+          const payload = { id: user.id, name: user.name, avatar: user.avatar };
+
+          // Sign token
+          jwt.sign(
+            payload,
+            keys.secretOrKe,
+            { expiresIn: 3600 },
+            (err, token) => {
+              res.status(200).json({
+                success: true,
+                token: 'Bearer ' + token
+              })
+            });
+        } else {
+          res.status(400).json({ Error: 'Password incorrect' });
+        }
+      }).catch(err => console.log(err));
+    }
+  }).catch(err => console.error(err));
+}
+
+module.exports = { registerController, loginController }
