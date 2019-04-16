@@ -7,9 +7,14 @@
  */
 
 const router = require('express').Router();
+const passport = require('passport');
 
 // import controller
-const { registerController, loginController } = require('../controller/users');
+const {
+  registerController,
+  loginController,
+  currentController
+} = require('../controller/users');
 
 /**
  * @route  POST api/users/register
@@ -24,5 +29,16 @@ router.post('/register', registerController);
  * @access Public
  */
 router.post('/login', loginController);
+
+// @route   GET api/users/current
+// @desc    Return current user
+// @access  Private
+router.get(
+  '/current',
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    res.json(req.user);
+  }
+);
 
 module.exports = router;

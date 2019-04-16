@@ -9,6 +9,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
+const passport = require('passport');
 
 // set up express app
 const app = express();
@@ -16,6 +17,11 @@ const app = express();
 // Middleware
 app.use(express.static(__dirname + '/public'));
 app.use(morgan('dev'));
+
+// Passport middleware
+app.use(passport.initialize());
+// Passport config
+require('./config/passport')(passport);
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));

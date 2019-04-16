@@ -106,4 +106,17 @@ const loginController = (req, res) => {
   }).catch(err => console.error(err));
 }
 
-module.exports = { registerController, loginController }
+/**
+* @controller Current
+* @desc       Return current user
+* @return     
+*/
+const currentController = (req, res) => {
+  res.json(req.user)
+}
+
+module.exports = {
+  registerController,
+  loginController,
+  currentController
+}
