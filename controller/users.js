@@ -10,6 +10,9 @@ const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+// import validator functionality
+const { validateRegisterInput } = require('../validator/validator');
+
 // Load Keys
 const keys = require('../config/keys');
 
@@ -22,13 +25,20 @@ const User = require('../models/User');
 * @return     
 */
 const registerController = (req, res) => {
-  let { name, email, password, password2 } = req.body;
+
+  // check input data is valid or not
+  const { isValid, errors } = validateRegisterInput(req.body);
+  if (!isValid) res.status(400).json(errors);
+
+  let { name, email, password } = req.body;
 
   // check email exist or not.
   User.findOne({ email })
     .then(user => {
-      if (user) res.status(409).json({ Error: 'Email already exist' })
-      else {
+      if (user) {
+        errors.email = 'Email already exist';
+        res.status(409).json(errors)
+      } else {
         let avatar = gravatar.url(email, { s: '200', r: 'pg', d: 'mm' });
         const newUser = new User({ name, email, password, avatar });
 
@@ -60,14 +70,15 @@ const loginController = (req, res) => {
       bcrypt.compare(password, user.password).then(isMatch => {
         if (isMatch) { // user & password matched
           // Create JWT Payload
-          const payload = { id: user.id, name: user.name, avatar: user.avatar };
+          const payload = { id: user.id, name: user.name, email: user.email };
 
           // Sign token
           jwt.sign(
             payload,
-            keys.secretOrKe,
-            { expiresIn: 3600 },
+            keys.secretOrKey,
+            { expiresIn: 86400 },
             (err, token) => {
+              if (err) console.error(err)
               res.status(200).json({
                 success: true,
                 token: 'Bearer ' + token
