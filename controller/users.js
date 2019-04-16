@@ -11,7 +11,10 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 // import validator functionality
-const { validateRegisterInput } = require('../validator/validator');
+const {
+  validateRegisterInput,
+  validateLoginInput
+} = require('../validator/validator');
 
 // Load Keys
 const keys = require('../config/keys');
@@ -25,9 +28,10 @@ const User = require('../models/User');
 * @return     
 */
 const registerController = (req, res) => {
-
   // check input data is valid or not
-  const { isValid, errors } = validateRegisterInput(req.body);
+  const {
+    isValid, errors
+  } = validateRegisterInput(req.body);
   if (!isValid) res.status(400).json(errors);
 
   let { name, email, password } = req.body;
@@ -60,12 +64,21 @@ const registerController = (req, res) => {
 * @return     
 */
 const loginController = (req, res) => {
+  // check input data is valid or not
+  const {
+    isValid,
+    errors
+  } = validateLoginInput(req.body);
+  if (!isValid) res.status(400).json(errors);
+
   let { email, password } = req.body;
 
   // Find user by email
   User.findOne({ email }).then(user => {
-    if (!user) res.status(404).json({ Error: 'User not found' });
-    else {
+    if (!user) {
+      errors.email = 'User account not found';
+      res.status(404).json(errors);
+    } else {
       // Check password
       bcrypt.compare(password, user.password).then(isMatch => {
         if (isMatch) { // user & password matched
@@ -85,7 +98,8 @@ const loginController = (req, res) => {
               })
             });
         } else {
-          res.status(400).json({ Error: 'Password incorrect' });
+          errors.password = 'Password is incorrect';
+          res.status(400).json(errors);
         }
       }).catch(err => console.log(err));
     }

@@ -11,7 +11,7 @@ const isEmpty = require('./is-empty');
 
 module.exports = {
   validateRegisterInput: (data) => {
-    const errors = {}
+    const errors = {};
 
     let { name, email, password, password2 } = data;
 
@@ -47,6 +47,29 @@ module.exports = {
     return ({
       isValid: isEmpty(errors),
       errors
-    })
+    });
+  },
+
+  validateLoginInput: (data) => {
+    const errors = {};
+
+    let { email, password } = data;
+
+    email = !isEmpty(email) ? email : '';
+    password = !isEmpty(password) ? password : '';
+
+    if (!validator.isEmail(email))
+      errors.email = 'Email is invalid';
+
+    if (validator.isEmpty(email))
+      errors.email = 'Email must be required';
+
+    if (validator.isEmpty(password))
+      errors.password = 'Password must be required';
+
+    return ({
+      isValid: isEmpty(errors),
+      errors
+    });
   }
 }
